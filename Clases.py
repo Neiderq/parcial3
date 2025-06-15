@@ -99,6 +99,67 @@ class DICOM:
         plt.savefig(f"{nombre_carpeta}_cortes.png")
         plt.show()
 
+    def crear_paciente(self):
+        if not self._slices or self._volumen is None:
+            print("No hay datos cargados.")
+            return None
+        try:
+            nombre = str(self.__slices[0].PatientName)
+        except:
+            nombre = "Desconocido"
+        try:
+            edad = str(self.__slices[0].PatientAge)
+        except:
+            edad = "Desconocida"
+        try:
+            id_paciente = str(self.__slices[0].PatientID)
+        except:
+            id_paciente = "Sin ID"
+        paciente = Paciente(nombre, edad, id_paciente, self.__volumen)
+        print(f"Paciente creado: {nombre}, Edad: {edad}, ID: {id_paciente}")
+        return paciente
+    
+    def aplicar_traslacion(self):
+        if self.__volumen is None:
+            print("No hay volumen cargado.")
+            return
+        # Seleccionar un corte (por ejemplo, el corte central axial)
+        imagen = self._volumen[self._volumen.shape[0] // 2, :, :]
+        # Mostrar opciones de traslación al usuario
+        opciones = {
+            "1": (200, 100),
+            "2": (-30, 100),
+            "3": (0, -300),
+            "4": (500, -200)
+        }
+        print("Opciones de traslación:")
+        for k, (tx, ty) in opciones.items():
+            print(f"{k}: tx={tx}, ty={ty}")
+
+        opcion = input("Elige una opción (1-4): ").strip()
+        if opcion not in opciones:
+            print("Opción inválida.")
+            return
+        tx, ty = opciones[opcion]
+        # Construir la matriz de traslación
+        M = np.float32([[1, 0, tx], [0, 1, ty]])
+        rows, cols = imagen.shape
+        trasladada = cv2.warpAffine(imagen, M, (cols, rows))
+        # Mostrar original vs trasladada
+        fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+        axs[0].imshow(imagen, cmap='gray')
+        axs[0].set_title("Original")
+        axs[0].axis('off')
+        axs[1].imshow(trasladada, cmap='gray')
+        axs[1].set_title(f"Trasladada tx={tx}, ty={ty}")
+        axs[1].axis('off')
+        plt.tight_layout()
+        nombre_base = os.path.basename(self.__carpeta.rstrip("/\\"))
+        # Guardar imagen trasladada y el subplot
+        plt.savefig(f"{nombre_base}_subplot_traslacion.png")
+        print("Imágenes guardadas correctamente.")
+        plt.show()
+
 
     
        
