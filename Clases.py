@@ -221,3 +221,21 @@ class ImagenSencilla:
             cv2.putText(self.__resultado, linea, (10, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
         return self.__resultado
+    def mostrar_y_guardar(self):
+        plt.imshow(cv2.cvtColor(self.__resultado, cv2.COLOR_BGR2RGB))
+        plt.axis('off')
+        plt.title("Resultado final")
+        plt.tight_layout()
+
+        nombre_archivo = os.path.splitext(os.path.basename(self.__ruta))[0]
+        plt.savefig(f"{nombre_archivo}_plot.png")
+        cv2.imwrite(f"{nombre_archivo}_procesada.png", self.__resultado)
+        plt.show()
+        print("Imagen procesada y guardada exitosamente.")
+
+    def procesar_completo(self):
+        """Ejecuta todo el flujo: binarización, transformación morfológica, dibujo y guardado."""
+        self.binarizar()
+        self.transformar_morfologicamente()
+        self.dibujar_forma_y_texto()
+        self.mostrar_y_guardar()
