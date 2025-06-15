@@ -64,4 +64,19 @@ def main():
                 print(f"Imagen cargada y almacenada con la clave '{clave}' en el diccionario de imágenes.")
             except Exception as e:
                 print(f"Error al cargar la imagen: {e}")
-        
+        elif opcion == '4':
+            if not diccionario_imagenes:
+                print("Primero debe procesar una carpeta DICOM (opción 1).")
+                continue
+
+            print("Claves disponibles en el diccionario de imágenes:")
+            for clave in diccionario_imagenes.keys():
+                print(f" - {clave}")
+
+            clave = input("Ingrese la clave de la imagen para aplicar traslación: ").strip()
+            if clave not in diccionario_imagenes:
+                print("Clave no encontrada.")
+                continue
+
+            dicom_obj = diccionario_imagenes[clave]
+            dicom_obj.aplicar_traslacion()
