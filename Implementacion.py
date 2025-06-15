@@ -80,3 +80,30 @@ def main():
 
             dicom_obj = diccionario_imagenes[clave]
             dicom_obj.aplicar_traslacion()
+        elif opcion == '5':
+            ruta = input("Ingrese la ruta de la imagen JPG o PNG: ").strip()
+            if not os.path.isfile(ruta):
+                print("Ruta inválida o archivo no encontrado.")
+                continue
+
+            try:
+                imagen_obj = ImagenSencilla(ruta)
+                imagen_obj.procesar_completo()
+
+                clave = input("Ingrese una clave para guardar esta imagen en el diccionario: ").strip()
+                diccionario_imagenes[clave] = imagen_obj
+                print(diccionario_imagenes)
+                print(f"Imagen procesada y guardada bajo la clave '{clave}'.")
+                continue
+            except Exception as e:
+                print(f"Error al procesar la imagen: {e}")
+            break
+        elif opcion == '6':
+            break
+            
+        else:
+            print("Opción inválida.")
+            continue
+
+if __name__ == "__main__":
+    main()
