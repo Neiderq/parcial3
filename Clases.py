@@ -159,6 +159,19 @@ class DICOM:
         plt.savefig(f"{nombre_base}_subplot_traslacion.png")
         print("Imágenes guardadas correctamente.")
         plt.show()
+    class ImagenSencilla:
+        def _init_(self, ruta_imagen):
+            self.__ruta = ruta_imagen
+            self.__imagen = cv2.imread(ruta_imagen, cv2.IMREAD_GRAYSCALE)
+            if self.__imagen is None:
+                raise ValueError("No se pudo cargar la imagen o la ruta es inválida.")
+            self.__nombre_tipo = None
+            self.__umbral = None
+            self.__binarizada = None
+            self.__kernel_size = None
+            self.__morfologica = None
+            self.__resultado = None
+
 
 
     
