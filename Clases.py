@@ -159,20 +159,65 @@ class DICOM:
         plt.savefig(f"{nombre_base}_subplot_traslacion.png")
         print("Imágenes guardadas correctamente.")
         plt.show()
-    class ImagenSencilla:
-        def _init_(self, ruta_imagen):
-            self.__ruta = ruta_imagen
-            self.__imagen = cv2.imread(ruta_imagen, cv2.IMREAD_GRAYSCALE)
-            if self.__imagen is None:
-                raise ValueError("No se pudo cargar la imagen o la ruta es inválida.")
-            self.__nombre_tipo = None
-            self.__umbral = None
-            self.__binarizada = None
-            self.__kernel_size = None
-            self.__morfologica = None
-            self.__resultado = None
-
-
-
+class ImagenSencilla:
+    def _init_(self, ruta_imagen):
+        self.__ruta = ruta_imagen
+        self.__imagen = cv2.imread(ruta_imagen, cv2.IMREAD_GRAYSCALE)
+        if self.__imagen is None:
+            raise ValueError("No se pudo cargar la imagen o la ruta es inválida.")
+        self.__nombre_tipo = None
+        self.__umbral = None
+        self.__binarizada = None
+        self.__kernel_size = None
+        self.__morfologica = None
+        self.__resultado = None
+    def get_nombre_archivo(self):
+        return os.path.splitext(os.path.basename(self.__ruta))[0]
     
-       
+    def binarizar(self):
+        opciones = {
+            "1": ("BINARIO", cv2.THRESH_BINARY),
+            "2": ("BINARIO INV", cv2.THRESH_BINARY_INV),
+            "3": ("TRUNCADO", cv2.THRESH_TRUNC),
+            "4": ("TOZERO", cv2.THRESH_TOZERO),
+            "5": ("TOZERO INV", cv2.THRESH_TOZERO_INV)
+        }
+        print("Opciones de binarización:")
+        for k, (nombre, _) in opciones.items():
+            print(f"{k}: {nombre}")
+        tipo = input("Elige tipo de binarización (1-5): ").strip()
+        if tipo not in opciones:
+            print("Opción inválida.")
+            return None
+        
+        self.__nombre_tipo, tipo_binarizacion = opciones[tipo]
+        self.__umbral = int(input("Ingrese valor de umbral (ej. 127): "))
+
+        _, self.__binarizada = cv2.threshold(self.__imagen, self.__umbral, 255, tipo_binarizacion)
+        return self.__binarizada
+    
+    def transformar_morfologicamente(self):
+        self.__kernel_size = int(input("Ingrese tamaño de kernel (ej. 3 o 5): "))
+        kernel = np.ones((self.__kernel_size, self.__kernel_size), np.uint8)
+        self.__morfologica = cv2.morphologyEx(self.__binarizada, cv2.MORPH_CLOSE, kernel)
+        return self.__morfologica
+    def dibujar_forma_y_texto(self):
+        self.__resultado = cv2.cvtColor(self.__morfologica, cv2.COLOR_GRAY2BGR)
+        alto, ancho = self.__resultado.shape[:2]
+
+        # Ahora: forma en la esquina superior izquierda
+        forma = input("¿Qué forma quieres dibujar? (circulo/cuadro): ").lower()
+        if forma == "circulo":
+            centro = (80, 80)  # Cercano al texto
+            cv2.circle(self.__resultado, centro, 200, (0, 255, 0), 2)
+        elif forma == "cuadro":
+            esquina1 = (10, 10)
+            esquina2 = (300, 300)
+            cv2.rectangle(self.__resultado, esquina1, esquina2, (255, 0, 0), 2)
+        texto = f"Imagen binarizada\nUmbral: {self.__umbral}, Kernel: {self.__kernel_size}"
+        y0 = 30
+        for i, linea in enumerate(texto.split('\n')):
+            y = y0 + i * 30
+            cv2.putText(self.__resultado, linea, (10, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+        return self.__resultado
