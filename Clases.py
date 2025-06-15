@@ -23,5 +23,18 @@ class Paciente:
     def mostrar_info(self):
         print(f"Nombre: {self._nombre}")
         print(f"Edad: {self._edad}")
-        print(f"ID Paciente: {self._id_paciente}") 
+        print(f"ID Paciente: {self._id_paciente}")
+class DICOM:
+    def _init_(self, carpeta):
+        self.__carpeta = carpeta #Carpeta donde están almacenados los archivos
+        self.__slices = [] #Almacena cada archivo tipo DICOM (corte)
+        self.__volumen = None #Reconstrucción 3d a partir de imágenes 2d
+
+    def cargar_cortes(self):
+        archivos = [f for f in os.listdir(self.__carpeta) if f.endswith('.dcm')]
+        # Leer todos los archivos DICOM dirRemove-Item -Recurse -Force .gitectamente
+        self._slices = [pydicom.dcmread(os.path.join(self._carpeta, archivo)) for archivo in archivos]
+        
+
+    
        
