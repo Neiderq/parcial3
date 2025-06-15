@@ -56,7 +56,7 @@ class DICOM:
         if self.__volumen is None:
             print("Volumen no cargado.")
             return
-         try:
+        try:
             spacing_xy = self.__slices[0].PixelSpacing  # [dy, dx]
             spacing_z = float(self.__slices[0].SliceThickness)
         except:
@@ -90,6 +90,14 @@ class DICOM:
             extent=[0, dy * self._volumen.shape[1], 0, dz * self._volumen.shape[0]]
         )
         axes[2].set_title("Sagital")
+        for ax in axes:
+            ax.set_xlabel("mm")
+            ax.set_ylabel("mm")
+
+        plt.tight_layout()
+        nombre_carpeta = os.path.basename(self.__carpeta.rstrip('/\\'))
+        plt.savefig(f"{nombre_carpeta}_cortes.png")
+        plt.show()
 
 
     
