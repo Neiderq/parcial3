@@ -51,4 +51,17 @@ def main():
                 print(f"Paciente guardado con ID: {paciente.get_id()}")    
                 print(diccionario_pacientes)
 
-       
+        elif opcion == '3':
+            ruta = input("Ingrese la ruta de la imagen JPG o PNG: ").strip()
+            if not os.path.isfile(ruta):
+                print("Ruta no válida.")
+                continue
+
+            try:
+                imagen = ImagenSencilla(ruta)  # Crea el objeto de la clase ya definida
+                clave = imagen.get_nombre_archivo()  # Nombre de archivo como clave
+                diccionario_imagenes[clave] = imagen
+                print(f"Imagen cargada y almacenada con la clave '{clave}' en el diccionario de imágenes.")
+            except Exception as e:
+                print(f"Error al cargar la imagen: {e}")
+        
